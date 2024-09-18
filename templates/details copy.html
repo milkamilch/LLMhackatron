@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de {{ filename }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <!-- Referencia a Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .lock-icon {
+            cursor: pointer;
+            font-size: 24px;
+        }
+        .order-section {
+            margin-top: 30px;
+        }
+        .order-header {
+            background-color: #e0f7fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="blue">
+        <div class="nav-wrapper">
+            <a href="{{ url_for('index') }}" class="brand-logo center">Detalle del Archivo</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h3 class="center-align">Editar el Archivo: {{ filename }}</h3>
+
+        <!-- Iteramos sobre cada orden en el JSON -->
+        {% for order in data %}
+        <div class="order-section">
+            <div class="order-header">
+                <h4>Orden {{ loop.index }}</h4> <!-- Muestra el número de la orden -->
+            </div>
+
+            <table class="highlight">
+                <thead>
+                    <tr>
+                        <th>Ruta</th>
+                        <th>Campo</th>
+                        <th>Valor</th>
+                        <th>Bloqueo</th>
+                        <th>Guardar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% macro render_field(key, value, path, order_index) %}
+                    <tr id="row-{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}">
+                        <td>{{ path }}</td>
+                        <td>{{ key }}</td>
+                        <td>
+                            <input type="text" name="{{ path }}" value="{{ value }}" class="validate" id="field-{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}" disabled oninput="updateValue('{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}')">
+                        </td>
+                        <td>
+                            <i class="material-icons lock-icon" id="lock-{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}" onclick="toggleLock('{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}')">lock</i>
+                        </td>
+                        <td>
+                            <form action="{{ url_for('save_json', filename=filename) }}#row-{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="path" value="{{ path }}">
+                                <input type="hidden" name="value" id="value-{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}" value="{{ value }}">
+                                <button type="submit" class="btn-small waves-effect waves-light blue" id="save-btn-{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}" disabled>Guardar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endmacro %}
+                    
+                    <!-- Iteramos sobre cada campo de la orden -->
+                    {% for key, value in order.items() %}
+                        {% if value is mapping %}
+                            <!-- Si el valor es un diccionario, como recogida o entrega, desglosamos los subcampos -->
+                            {% for subkey, subvalue in value.items() %}
+                                {{ render_field(subkey, subvalue, key ~ '.' ~ subkey, loop.index) }}
+                            {% endfor %}
+                        {% elif value is sequence and value is not string %}
+                            <!-- Si el valor es una lista, como bultos -->
+                            {% if key == "bultos" %}
+                                {% for i, item in value %}
+                                    <tr>
+                                        <td colspan="5"><strong>Bulto {{ loop.index }}</strong></td>
+                                    </tr>
+                                    {% if item is mapping %}
+                                        {% for subkey, subvalue in item.items() %}
+                                            {{ render_field(subkey, subvalue, key ~ '[' ~ i ~ '].' ~ subkey, loop.index) }}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% else %}
+                            <!-- Si observaciones o cualquier otro valor es una cadena o número, tratamos como valor simple -->
+                            {{ render_field(key, value, key, loop.index) }}
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+
+    <footer class="page-footer blue">
+        <div class="container">
+            <p>&copy; 2024 Aplicación JSON</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleLock(id) {
+            // Revisamos si el ID de los elementos correspondientes existen antes de manipularlos
+            var field = document.getElementById('field-' + id);
+            var lockIcon = document.getElementById('lock-' + id);
+            var saveBtn = document.getElementById('save-btn-' + id);
+
+            if (field && lockIcon && saveBtn) {
+                if (field.disabled) {
+                    field.disabled = false;  // Desbloquear el campo
+                    lockIcon.textContent = 'lock_open';  // Cambiar el ícono a 'desbloqueado'
+                    saveBtn.disabled = false;  // Habilitar el botón de guardar
+                } else {
+                    field.disabled = true;  // Bloquear el campo
+                    lockIcon.textContent = 'lock';  // Cambiar el ícono a 'bloqueado'
+                    saveBtn.disabled = true;  // Deshabilitar el botón de guardar
+                }
+            }
+        }
+
+        function updateValue(id) {
+            var field = document.getElementById('field-' + id);
+            var valueField = document.getElementById('value-' + id);
+
+            if (field && valueField) {
+                valueField.value = field.value;
+            }
+        }
+    </script>
+</body>
+</html>

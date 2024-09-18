@@ -1,0 +1,177 @@
+[
+    {
+        "clientId": 1038,
+        "referencia": null,
+        "incoterms": "EXW",
+        "recogida": {
+            "nombre": "FUNCOTEX, S.L.U.",
+            "direccion": "Ctra. Masía del Juez, 36, Pol. Ind. Masía del Juez",
+            "postal": "46900",
+            "ciudad": "TORRENTE (Valencia)",
+            "pais": "ES",
+            "telefono": "+34 96 156 22 26",
+            "contacto": "MARIAJOSE TARREGA",
+            "mail": "exportacion@funcotex.com"
+        },
+        "entrega": {
+            "nombre": "METZELER SCHAUM GMBH",
+            "direccion": "DONAUSTRABE, 51",
+            "postal": "D-87700",
+            "ciudad": "MEMMINGEN",
+            "pais": "DE",
+            "telefono": "08331 830-000",
+            "contacto": null,
+            "mail": null
+        },
+        "bultos": 
+            {
+                "cantidad": 15,
+                "descripcion": "box de 100x200x140 (remontables)",
+                "volumen": "100x200x140",
+                "peso": null
+            }
+        ,
+        "observaciones": "Mañana por la tarde os confirmo las cargas."
+        
+    },
+    {
+        "clientId": 1038,
+        "referencia": null,
+        "incoterms": "EXW",
+        "recogida": {
+            "nombre": "FUNCOTEX, S.L.U.",
+            "direccion": "Ctra. Masía del Juez, 36, Pol. Ind. Masía del Juez",
+            "postal": "46900",
+            "ciudad": "TORRENTE (Valencia)",
+            "pais": "ES",
+            "telefono": "+34 96 156 22 26",
+            "contacto": "MARIAJOSE TARREGA",
+            "mail": "exportacion@funcotex.com"
+        },
+        "entrega": {
+            "nombre": "LIMOGES COPIREL",
+            "direccion": "168 ROUTE DE NEXON",
+            "postal": "87036",
+            "ciudad": "LIMOGES",
+            "pais": "FR",
+            "telefono": "0555314654",
+            "contacto": null,
+            "mail": null
+        },
+        "bultos": 
+            {
+                "cantidad": 1,
+                "descripcion": "box de 100x200x140 (remontables) + 1 pallet de 140x115x200",
+                "volumen": "100x200x140 + 140x115x200",
+                "peso": null
+            }
+        ,
+        "observaciones": "Mañana por la tarde os confirmo las cargas."
+        
+    },
+    {
+        "clientId": 1038,
+        "referencia": null,
+        "incoterms": "EXW",
+        "recogida": {
+            "nombre": "FUNCOTEX, S.L.U.",
+            "direccion": "Ctra. Masía del Juez, 36, Pol. Ind. Masía del Juez",
+            "postal": "46900",
+            "ciudad": "TORRENTE (Valencia)",
+            "pais": "ES",
+            "telefono": "+34 96 156 22 26",
+            "contacto": "MARIAJOSE TARREGA",
+            "mail": "exportacion@funcotex.com"
+        },
+        "entrega": {
+            "nombre": "SOCOFAL SAS",
+            "direccion": "ZA DE NAUJAC",
+            "postal": "FR-12450",
+            "ciudad": "LA PRIMAUBE",
+            "pais": "FR",
+            "telefono": "+33 5 65 714441",
+            "contacto": null,
+            "mail": null
+        },
+        "bultos": 
+            {
+                "cantidad": 3,
+                "descripcion": "pallets de 140x115x100 (remontables)",
+                "volumen": "140x115x100",
+                "peso": null
+            }
+        ,
+        "observaciones": "Mañana por la tarde os confirmo las cargas."
+        
+    },
+    {
+        "clientId": 1038,
+        "referencia": null,
+        "incoterms": "EXW",
+        "recogida": {
+            "nombre": "FUNCOTEX, S.L.U.",
+            "direccion": "Ctra. Masía del Juez, 36, Pol. Ind. Masía del Juez",
+            "postal": "46900",
+            "ciudad": "TORRENTE (Valencia)",
+            "pais": "ES",
+            "telefono": "+34 96 156 22 26",
+            "contacto": "MARIAJOSE TARREGA",
+            "mail": "exportacion@funcotex.com"
+        },
+        "entrega": {
+            "nombre": "SECONDLY SUD-EST",
+            "direccion": "122, CHEMIN DU STADE",
+            "postal": "FR-07000",
+            "ciudad": "FLAVIAC",
+            "pais": "FR",
+            "telefono": "33 630482170",
+            "contacto": null,
+            "mail": null
+        },
+        "bultos": 
+            {
+                "cantidad": 4,
+                "descripcion": "pallets de 140x115x200",
+                "volumen": "140x115x200",
+                "peso": null
+            }
+        ,
+        "observaciones": "Mañana por la tarde os confirmo las cargas."
+        
+    },
+    {
+        "clientId": 1038,
+        "referencia": null,
+        "incoterms": "EXW",
+        "recogida": {
+            "nombre": "FUNCOTEX, S.L.U.",
+            "direccion": "Ctra. Masía del Juez, 36, Pol. Ind. Masía del Juez",
+            "postal": "46900",
+            "ciudad": "TORRENTE (Valencia)",
+            "pais": "ES",
+            "telefono": "+34 96 156 22 26",
+            "contacto": "MARIAJOSE TARREGA",
+            "mail": "exportacion@funcotex.com"
+        },
+        "entrega": {
+            "nombre": "RECTICEL SAS",
+            "direccion": "Zone industrielle de Costet",
+            "postal": "FR-43300",
+            "ciudad": "MAZEYRAT D'ALLIER",
+            "pais": "FR",
+            "telefono": "33471745475",
+            "contacto": "Vincent.Cyril@recticel.com",
+            "mail": null
+        },
+        "bultos": 
+            {
+                "cantidad": 14,
+                "descripcion": "cajas de 80x120x84 (remontables)",
+                "volumen": "80x120x84",
+                "peso": null
+            }
+        ,
+        "observaciones": "Mañana por la tarde os confirmo las cargas."
+        
+    }
+]

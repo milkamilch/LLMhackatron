@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Archivos JSON</title>
+    <!-- Incluir Materialize CSS para el estilo -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="blue">
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo center">Archivos JSON</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h3 class="center-align">Listado de Archivos JSON</h3>
+
+        <!-- Verificamos si hay archivos JSON -->
+        {% if json_files %}
+            <ul class="collection">
+                <!-- Recorremos cada archivo JSON y generamos un enlace -->
+                {% for json_file in json_files %}
+                    <li class="collection-item">
+                        <a href="{{ url_for('view_json', filename=json_file) }}">{{ json_file }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay archivos JSON disponibles.</p>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer blue">
+        <div class="container">
+            <div class="center-align">
+                <p>&copy; 2024 Aplicación JSON</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Incluir Materialize JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>

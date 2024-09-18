@@ -1,0 +1,185 @@
+[
+    {
+        "clientId": 1038,
+        "referencia": null,
+        "incoterms": "EXW",
+        "recogida": {
+            "nombre": "FUNCOTEX, S.L.U.",
+            "direccion": "Ctra. Masía del Juez, 36, Pol. Ind. Masía del Juez",
+            "postal": "46900",
+            "ciudad": "TORRENTE (Valencia)",
+            "pais": "ES",
+            "telefono": "+34 96 156 22 26",
+            "contacto": "MARIAJOSE TARREGA",
+            "mail": "exportacion@funcotex.com"
+        },
+        "entrega": {
+            "nombre": "SARL SENSO PUR",
+            "direccion": "40, RUE ANTONINE CONDORCET",
+            "postal": "FR-38090",
+            "ciudad": "VAULX MILIEU",
+            "pais": "FR",
+            "telefono": "0033474073351",
+            "contacto": null,
+            "mail": null
+        },
+        "bultos": 
+            {
+                "cantidad": 3,
+                "descripcion": "pallets",
+                "volumen": "140x115x200",
+                "peso": null
+            }
+        ,
+        "observaciones":"Para este viernes tendremos la siguiente previsión"
+            
+            
+        
+    },
+    {
+        "clientId": 1038,
+        "referencia": null,
+        "incoterms": "EXW",
+        "recogida": {
+            "nombre": "FUNCOTEX, S.L.U.",
+            "direccion": "Ctra. Masía del Juez, 36, Pol. Ind. Masía del Juez",
+            "postal": "46900",
+            "ciudad": "TORRENTE (Valencia)",
+            "pais": "ES",
+            "telefono": "+34 96 156 22 26",
+            "contacto": "MARIAJOSE TARREGA",
+            "mail": "exportacion@funcotex.com"
+        },
+        "entrega": {
+            "nombre": "METZELER SCHAUM GMBH",
+            "direccion": "DONAUSTRABE, 51",
+            "postal": "D-87700",
+            "ciudad": "MEMMINGEN",
+            "pais": "DE",
+            "telefono": "08331 830-000",
+            "contacto": null,
+            "mail": null
+        },
+        "bultos": 
+            {
+                "cantidad": 11,
+                "descripcion": "box remontables",
+                "volumen": "100x200x140",
+                "peso": null
+            }
+        ,
+        "observaciones": "Para este viernes tendremos la siguiente previsión"
+        
+
+            
+        
+    },
+    {
+        "clientId": 1038,
+        "referencia": null,
+        "incoterms": "EXW",
+        "recogida": {
+            "nombre": "FUNCOTEX, S.L.U.",
+            "direccion": "Ctra. Masía del Juez, 36, Pol. Ind. Masía del Juez",
+            "postal": "46900",
+            "ciudad": "TORRENTE (Valencia)",
+            "pais": "ES",
+            "telefono": "+34 96 156 22 26",
+            "contacto": "MARIAJOSE TARREGA",
+            "mail": "exportacion@funcotex.com"
+        },
+        "entrega": {
+            "nombre": "S.A.R.L. FRIMMAT",
+            "direccion": "ROUTE DEPARTEMENTAL 518",
+            "postal": "38160",
+            "ciudad": "LA GAUCHERIE",
+            "pais": "FR",
+            "telefono": "0033.476.384061",
+            "contacto": null,
+            "mail": null
+        },
+        "bultos": 
+            {
+                "cantidad": 5,
+                "descripcion": "pallets",
+                "volumen": "140x115x200",
+                "peso": null
+            }
+        ,
+        "observaciones": "Para este viernes tendremos la siguiente previsión"
+            
+        
+    },
+    {
+        "clientId": 1038,
+        "referencia": null,
+        "incoterms": "EXW",
+        "recogida": {
+            "nombre": "FUNCOTEX, S.L.U.",
+            "direccion": "Ctra. Masía del Juez, 36, Pol. Ind. Masía del Juez",
+            "postal": "46900",
+            "ciudad": "TORRENTE (Valencia)",
+            "pais": "ES",
+            "telefono": "+34 96 156 22 26",
+            "contacto": "MARIAJOSE TARREGA",
+            "mail": "exportacion@funcotex.com"
+        },
+        "entrega": {
+            "nombre": "YANIS FOAMS AND MATTRESSES LTD",
+            "direccion": "UNIT 19-20 HAYLEYS MANOR, UPLAND ROAD, EPPING",
+            "postal": "CM16 6PQ",
+            "ciudad": "EPPING",
+            "pais": "GB",
+            "telefono": "2084507662",
+            "contacto": null,
+            "mail": null
+        },
+        "bultos": 
+            {
+                "cantidad": 2,
+                "descripcion": "pallets",
+                "volumen": "140x115x200",
+                "peso": null
+            }
+        ,
+        "observaciones": "Para este viernes tendremos la siguiente previsión"
+            
+        
+    },
+    {
+        "clientId": 1038,
+        "referencia": null,
+        "incoterms": "EXW",
+        "recogida": {
+            "nombre": "FUNCOTEX, S.L.U.",
+            "direccion": "Ctra. Masía del Juez, 36, Pol. Ind. Masía del Juez",
+            "postal": "46900",
+            "ciudad": "TORRENTE (Valencia)",
+            "pais": "ES",
+            "telefono": "+34 96 156 22 26",
+            "contacto": "MARIAJOSE TARREGA",
+            "mail": "exportacion@funcotex.com"
+        },
+        "entrega": {
+            "nombre": "AUM SLEEP NV",
+            "direccion": "Brugsesteenweg 106",
+            "postal": "BE-8740",
+            "ciudad": "PITTEM",
+            "pais": "BE",
+            "telefono": "+32 51 42 41 37",
+            "contacto": null,
+            "mail": null
+        },
+        "bultos": 
+            {
+                "cantidad": 3,
+                "descripcion": "pallets",
+                "volumen": "140x115x200",
+                "peso": null
+            }
+        ,
+        "observaciones": "Para este viernes tendremos la siguiente previsión"
+            
+        
+    }
+]
