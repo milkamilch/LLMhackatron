@@ -4,68 +4,68 @@ import json
 
 app = Flask(__name__)
 
-# Directorio de JSON
+# Directory for JSON files
 JSON_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../Downloads/Hackaton2/json_files")
 
 
 def set_value_in_json(data, path, value):
     """
-    Navegar y actualizar el JSON siguiendo la ruta dada.
-    Si la ruta contiene índices de lista, se convierten correctamente en enteros.
+    Navigate and update the JSON following the given path.
+    If the path contains list indices, they are properly converted to integers.
     """
-    keys = path.replace('[', '.').replace(']', '').split('.')  # Dividir la ruta en claves e índices
+    keys = path.replace('[', '.').replace(']', '').split('.')  # Split the path into keys and indices
     current = data
 
-    # Navegar hasta el penúltimo nivel del JSON
+    # Navigate to the second-to-last level of the JSON
     for i, key in enumerate(keys[:-1]):
         if isinstance(current, list):
             try:
-                # Convertir la clave en índice solo si estamos en una lista
+                # Convert the key to an index only if we are in a list
                 key = int(key)
             except ValueError:
-                return f"Error: se esperaba un índice entero, pero se recibió '{key}'"
-        # Acceder al siguiente nivel
+                return f"Error: expected an integer index, but got '{key}'"
+        # Access the next level
         try:
             current = current[key]
         except (KeyError, IndexError, TypeError) as e:
-            return f"Error al navegar en el JSON: {e}"
+            return f"Error navigating the JSON: {e}"
 
-    # Obtener la clave final
+    # Get the final key
     final_key = keys[-1]
     if isinstance(current, list):
         try:
-            final_key = int(final_key)  # Convertir el último índice en entero si es una lista
+            final_key = int(final_key)  # Convert the final index to integer if it's a list
         except ValueError:
-            return f"Error: se esperaba un índice entero, pero se recibió '{final_key}'"
+            return f"Error: expected an integer index, but got '{final_key}'"
 
-    # Actualizar el valor en el nivel correcto
+    # Update the value at the correct level
     try:
         current[final_key] = value
     except (KeyError, IndexError, TypeError) as e:
-        return f"Error al intentar asignar el valor en el JSON: {e}"
+        return f"Error attempting to assign the value in the JSON: {e}"
 
-    return None  # No hubo errores
+    return None  # No errors
 
 
 @app.route('/')
 def index():
-    # Comprobar si el directorio existe
+    # Check if the directory exists
     if not os.path.exists(JSON_DIR):
-        return "El directorio no existe", 404
+        return "The directory does not exist", 404
 
-    # Listar archivos JSON
+    # List JSON files
     json_files = [f for f in os.listdir(JSON_DIR) if f.endswith('.json')]
-    
-    # Si no hay archivos JSON
+
+    # If there are no JSON files
     if not json_files:
-        return "No hay archivos JSON disponibles", 404
-    
+        return "No JSON files available", 404
+
     return render_template('index.html', json_files=json_files)
 
 
 @app.route('/view/<filename>', methods=['GET'])
 def view_json(filename):
-    # Cargar el archivo JSON
+    # Load the JSON file
     file_path = os.path.join(JSON_DIR, filename)
     with open(file_path, 'r') as f:
         data = json.load(f)
@@ -74,25 +74,25 @@ def view_json(filename):
 
 @app.route('/save/<filename>', methods=['POST'])
 def save_json(filename):
-    # Cargar el archivo JSON actual
+    # Load the current JSON file
     file_path = os.path.join(JSON_DIR, filename)
     with open(file_path, 'r') as f:
         data = json.load(f)
 
-    # Obtener la ruta y el nuevo valor
-    path = request.form['path']  # Ejemplo: "bultos[0].campo"
-    new_value = request.form['value']  # El nuevo valor
+    # Get the path and the new value
+    path = request.form['path']  # Example: "bultos[0].campo"
+    new_value = request.form['value']  # The new value
 
-    # Actualizar el JSON
+    # Update the JSON
     error = set_value_in_json(data, path, new_value)
     if error:
         return error, 400
 
-    # Sobrescribir el archivo JSON
+    # Overwrite the JSON file
     with open(file_path, 'w') as f:
         json.dump(data, f, indent=4)
 
-    # Redirigir a la página de detalles
+    # Redirect to the details page
     anchor = path.replace('.', '_').replace('[', '_').replace(']', '_')
     return redirect(url_for('view_json', filename=filename) + f"#field-{anchor}")
 
