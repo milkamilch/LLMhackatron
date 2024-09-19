@@ -1,27 +1,194 @@
+/* General body styling */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-}
-
-h1 {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #f4f7f9;  /* Light background for better readability */
     color: #333;
+    line-height: 1.6;
 }
 
-ul {
-    list-style-type: none;
+/* Container for the main content */
+.container {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
 }
 
-a {
+/* Navbar styles */
+.blue {
+    background-color: #0288d1;  /* Bright, modern blue */
+}
+
+.nav-wrapper .brand-logo {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: #fff !important;  /* Ensure text stands out */
+}
+
+/* Main header style */
+h3 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 2.2rem;
+    text-align: center;
+    color: #01579b;
+    margin-bottom: 40px;
+}
+
+/* Styling the list of JSON files */
+.collection {
+    padding-left: 0;
+    padding-right: 0;
+    background-color: #fff;
+    border-radius: 8px;  /* Rounded corners for modern look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Soft shadow for depth */
+}
+
+.collection-item {
+    padding: 20px;
+    font-size: 1.1rem;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.collection-item:last-child {
+    border-bottom: none; /* Remove border from the last item */
+}
+
+/* Link styles inside collection items */
+.collection-item a {
     text-decoration: none;
-    color: #007BFF;
+    color: #0288d1;
+    font-weight: 500;
+    transition: color 0.3s ease; /* Smooth transition on hover */
 }
 
-a:hover {
-    text-decoration: underline;
+.collection-item a:hover {
+    color: #01579b;
 }
 
-pre {
-    background-color: #f4f4f4;
-    padding: 15px;
+/* Button styles */
+.btn {
+    background-color: #0288d1;
+    color: white;
+    font-weight: 500;
+    text-transform: uppercase;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #01579b;
+}
+
+/* Footer styles */
+.page-footer {
+    background-color: #01579b;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);  /* Add shadow for a lifted look */
+    flex-shrink: 0;
+    position: relative;  /* Ensure positioning context for the button */
+}
+
+.page-footer p {
+    margin: 0;
+    padding: 0;
+}
+
+/* Back button styles */
+.back-button {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: white;
+    color: #01579b;
+    font-weight: 500;
+    text-transform: uppercase;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #e0e0e0;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    .collection-item {
+        padding: 15px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h3 {
+        font-size: 1.6rem;
+    }
+
+    .collection-item {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
+
+/* CSS for sticky footer */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+.content {
+    flex: 1 0 auto;
+}
+.page-footer {
+    flex-shrink: 0;
+}
+
+/* Additional styles for details.html */
+.lock-icon {
+    cursor: pointer;
+    font-size: 24px;
+}
+.order-section {
+    margin-top: 30px;
+}
+.order-header {
+    background-color: #e0f7fa;
+    padding: 10px;
     border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.locked {
+    background-color: #f0f0f0;
+    color: #757575;
+}
+.unlocked {
+    background-color: #ffffff;
+    color: #000000;
+}
+.lock-icon.locked {
+    color: #ff5252;
+}
+.lock-icon.unlocked {
+    color: #4caf50;
+}
+.disabled {
+    cursor: not-allowed;
 }

@@ -1,48 +1,121 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List of JSON Files</title>
+    <title>List of Orders</title>
     <!-- Include Materialize CSS for styling -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="/static/style.css?v=1.0" rel="stylesheet">
+    <!-- Import Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* CSS to gray out the row when deleted */
+        .disabled-row {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="blue">
         <div class="nav-wrapper">
-            <a href="#" class="brand-logo center">JSON Files</a>
+            <a href="#" class="brand-logo center">Orders List</a>
         </div>
     </nav>
 
-    <div class="container">
-        <h3 class="center-align">List of JSON Files</h3>
+    <div class="container content">
+        <h3 class="center-align">List of Orders</h3>
 
-        <!-- Check if there are any JSON files -->
+        <!-- Check if there are any orders -->
         {% if json_files %}
             <ul class="collection">
-                <!-- Iterate through each JSON file and generate a link -->
-                {% for json_file in json_files %}
-                    <li class="collection-item">
-                        <a href="{{ url_for('view_json', filename=json_file) }}">{{ json_file }}</a>
+                <!-- Iterate through each order and generate a link and send button -->
+                {% for order in json_files %}
+                    <li class="collection-item" id="order-row-{{ order.ID }}">
+                        <!-- Flexbox container for aligning text and buttons -->
+                        <div class="row" style="display: flex; align-items: center;">
+                            <!-- Order Information on the left -->
+                            <div class="col s6" id="order-text-{{ order.ID }}">
+                                <span><strong>Customer:</strong> {{ order.customer_name }} | <strong>Order ID:</strong> {{ order.ID }}</span><br>
+                                <span><strong>Pickup Country:</strong> {{ order.pickup_country }} | <strong>Delivery Country:</strong> {{ order.delivery_country }}</span><br>
+                                <span><strong>Status:</strong> {{ order.status }} | <strong>Sent:</strong> {{ 'Yes' if order.sent else 'No' }}</span>
+                            </div>
+
+                            <!-- Buttons (Send, View Details, Delete) on the right -->
+                            <div class="col s6 right-align">
+                                <!-- Only show the Send button if the order has not been sent -->
+                                {% if not order.sent %}
+                                    <button class="btn green" id="send-btn-{{ order.ID }}" onclick="updateOrderStatus({{ order.ID }}, 'sent')">
+                                        <i class="material-icons left">send</i> Send
+                                    </button>
+                                {% else %}
+                                    <span class="chip green white-text">Already Sent</span>
+                                {% endif %}
+
+                                <!-- View Details Button -->
+                                <a href="/order/{{ order.ID }}" class="btn blue" id="view-btn-{{ order.ID }}">
+                                    <i class="material-icons left">visibility</i> View Details
+                                </a>
+
+                                <!-- Delete Button -->
+                                <button class="btn red" onclick="updateOrderStatus({{ order.ID }}, 'deleted')">
+                                    <i class="material-icons left">delete</i> Delete
+                                </button>
+                            </div>
+                        </div>
                     </li>
                 {% endfor %}
             </ul>
         {% else %}
-            <p>No JSON files available.</p>
+            <p>No orders available.</p>
         {% endif %}
     </div>
 
-    <!-- Footer -->
-    <footer class="page-footer blue">
-        <div class="container">
-            <div class="center-align">
-                <p>&copy; 2024 JSON Application</p>
-            </div>
-        </div>
-    </footer>
-
     <!-- Include Materialize JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script>
+        // Function to send or delete the order by updating the status using the PUT endpoint
+        function updateOrderStatus(orderId, action) {
+            let statusUpdate;
+            if (action === 'sent') {
+                statusUpdate = { sent: true, status: 'Sent' };
+            } else if (action === 'deleted') {
+                statusUpdate = { status: 'deleted' };
+            }
+
+            fetch(`/orders/${orderId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(statusUpdate)  // Update the status based on the action
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Error updating order');
+            })
+            .then(data => {
+                console.log(`Order ${action} successfully:`, data);
+                if (action === 'sent') {
+                    M.toast({html: 'Order sent successfully!', classes: 'green', displayLength: 8000});
+                } else if (action === 'deleted') {
+                    // Gray out the text and row after deletion
+                    const row = document.getElementById(`order-row-${orderId}`);
+                    row.classList.add('disabled-row');
+                    M.toast({html: 'Order marked as deleted!', classes: 'red', displayLength: 8000});
+                }
+                location.reload();  // Reload the page to update the status
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                M.toast({html: `Error ${action} order!`, classes: 'red', displayLength: 8000});
+            });
+        }
+    </script>
 </body>
 </html>

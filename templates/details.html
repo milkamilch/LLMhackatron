@@ -1,148 +1,278 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Details of {{ filename }}</title>
+    <title>Order Details</title>
+    <!-- Include Materialize CSS for styling -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-    <!-- Reference to Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        .lock-icon {
-            cursor: pointer;
-            font-size: 24px;
+        /* Style for the floating save button */
+        .floating-save-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
         }
-        .order-section {
-            margin-top: 30px;
+
+        .container {
+            margin-bottom: 80px; /* To avoid overlap with the floating button */
         }
-        .order-header {
-            background-color: #e0f7fa;
-            padding: 10px;
-            border-radius: 5px;
+
+        /* Two-column layout */
+        .main-content {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            flex-wrap: wrap;
         }
+
+        .form-container {
+            width: 60%; /* Adjust width of the form content */
+        }
+
+        /* Sidebar for raw email content */
+        .raw-email-sidebar {
+            width: 35%;
+            position: relative;
+            padding: 20px;
+            border: 1px solid #ddd;
+            max-height: 100%;
+            overflow-y: auto;
+            word-wrap: break-word; /* Ensure the text wraps properly */
+            margin-left: 20px; /* Add space between the form and email section */
+        }
+
+        .raw-email-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .raw-email-content {
+            white-space: pre-wrap; /* Preserve line breaks in the email */
+            font-family: monospace;
+            max-width: 100%; /* Keep the content within the container */
+        }
+
+        /* Format the email blockquote */
+        blockquote {
+            font-style: italic;
+            padding-left: 10px;
+            border-left: 5px solid #ccc;
+            margin-left: 0;
+        }
+
+        .main-content table {
+            width: 100%;
+        }
+
+        /* Ensure both the form and email content take up available height */
+        .main-content {
+            align-items: flex-start;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+        }
+
+
     </style>
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="blue">
         <div class="nav-wrapper">
-            <a href="{{ url_for('index') }}" class="brand-logo center">File Details</a>
+            <a href="#" class="brand-logo center">Order Details</a>
         </div>
     </nav>
 
-    <div class="container">
-        <h3 class="center-align">Edit File: {{ filename }}</h3>
+    <!-- Back Button -->
+<a href="/orderslist/" class="btn blue back-btn" style="margin-bottom: 20px;">
+    <i class="material-icons left">arrow_back</i> Back to Orders
+</a>
 
-        <!-- Iterate over each order in the JSON -->
-        {% for order in data %}
-        <div class="order-section">
-            <form action="{{ url_for('save_json', filename=filename) }}#orden-{{ loop.index }}" method="POST">
-                <div class="order-header">
-                    <h4>Order {{ loop.index }}</h4> <!-- Display the order number -->
-                    <button type="submit" class="btn waves-effect waves-light blue" id="save-order-{{ loop.index }}">Save Order</button>
-                </div>
 
+    <div class="container main-content">
+        <!-- Main content left (form for order details) -->
+        <div class="form-container">
+            <h3 class="center-align">Edit Details for Order ID: {{ data['ID'] }}</h3>
+
+            <form id="orderForm" onsubmit="saveOrder(event)">
                 <table class="highlight">
                     <thead>
                         <tr>
-                            <th>Path</th>
                             <th>Field</th>
                             <th>Value</th>
-                            <th>Lock</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% macro render_field(key, value, path, order_index) %}
-                        <tr id="row-{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}">
-                            <td>{{ path }}</td>
-                            <td>{{ key }}</td>
-                            <td>
-                                <input type="text" name="{{ path }}" value="{{ value }}" class="validate" id="field-{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}" disabled oninput="updateValue('{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}')">
-                            </td>
-                            <td>
-                                <i class="material-icons lock-icon" id="lock-{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}" onclick="toggleLock('{{ order_index }}_{{ path | replace('.', '_') | replace('[', '_') | replace(']', '_') }}', '{{ order_index }}')">lock</i>
-                            </td>
+                        <tr>
+                            <td>Client ID</td>
+                            <td><input type="text" name="client_Id" value="{{ data['client_Id'] }}"></td>
                         </tr>
-                        {% endmacro %}
-
-                        <!-- Iterate over each field in the order -->
-                        {% for key, value in order.items() %}
-                            {% if value is mapping %}
-                                <!-- If the value is a dictionary, like pickup or delivery, break down subfields -->
-                                {% for subkey, subvalue in value.items() %}
-                                    {{ render_field(subkey, subvalue, key ~ '.' ~ subkey, loop.index) }}
-                                {% endfor %}
-                            {% elif value is sequence and value is not string %}
-                                <!-- If the value is a list, like packages -->
-                                {% if key == "bultos" %}
-                                    {% for i, item in value %}
-                                        <tr>
-                                            <td colspan="4"><strong>Package {{ loop.index }}</strong></td>
-                                        </tr>
-                                        {% if item is mapping %}
-                                            {% for subkey, subvalue in item.items() %}
-                                                {{ render_field(subkey, subvalue, key ~ '[' ~ i ~ '].' ~ subkey, loop.index) }}
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
-                            {% else %}
-                                <!-- If observations or any other value is a string or number, treat it as a simple value -->
-                                {{ render_field(key, value, key, loop.index) }}
-                            {% endif %}
-                        {% endfor %}
+                        <tr>
+                            <td>Customer Name</td>
+                            <td><input type="text" name="customer_name" value="{{ data['customer_name'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Reference</td>
+                            <td><input type="text" name="reference" value="{{ data['reference'] or '' }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Incoterms</td>
+                            <td><input type="text" name="incoterms" value="{{ data['incoterms'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Pickup Name</td>
+                            <td><input type="text" name="pickup_name" value="{{ data['pickup_name'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Pickup Address</td>
+                            <td><input type="text" name="pickup_address" value="{{ data['pickup_address'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Pickup Postal Code</td>
+                            <td><input type="text" name="pickup_postalcode" value="{{ data['pickup_postalcode'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Pickup City</td>
+                            <td><input type="text" name="pickup_city" value="{{ data['pickup_city'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Pickup Country</td>
+                            <td><input type="text" name="pickup_country" value="{{ data['pickup_country'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Pickup Phone</td>
+                            <td><input type="text" name="pickup_tlf" value="{{ data['pickup_tlf'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Pickup Contact Name</td>
+                            <td><input type="text" name="pickup_contact_name" value="{{ data['pickup_contact_name'] or '' }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Pickup Email</td>
+                            <td><input type="text" name="pickup_email" value="{{ data['pickup_email'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery Name</td>
+                            <td><input type="text" name="delivery_name" value="{{ data['delivery_name'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery Address</td>
+                            <td><input type="text" name="delivery_address" value="{{ data['delivery_address'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery Postal Code</td>
+                            <td><input type="text" name="delivery_postalcode" value="{{ data['delivery_postalcode'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery City</td>
+                            <td><input type="text" name="delivery_city" value="{{ data['delivery_city'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery Country</td>
+                            <td><input type="text" name="delivery_country" value="{{ data['delivery_country'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery Phone</td>
+                            <td><input type="text" name="delivery_tlf" value="{{ data['delivery_tlf'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery Contact Name</td>
+                            <td><input type="text" name="delivery_contact_name" value="{{ data['delivery_contact_name'] or '' }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery Email</td>
+                            <td><input type="text" name="delivery_email" value="{{ data['delivery_email'] or '' }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Package Quantity</td>
+                            <td><input type="text" name="pck_quantity" value="{{ data['pck_quantity'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td><input type="text" name="description" value="{{ data['description'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Dimensions</td>
+                            <td><input type="text" name="dimensions" value="{{ data['dimensions'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Weight</td>
+                            <td><input type="text" name="weight" value="{{ data['weight'] or '' }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Remarks</td>
+                            <td><textarea name="remarks">{{ data['remarks'] }}</textarea></td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td><input type="text" name="status" value="{{ data['status'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>User</td>
+                            <td><input type="text" name="user" value="{{ data['user'] }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Sent</td>
+                            <td><input type="checkbox" name="sent" {% if data['sent'] %}checked{% endif %}></td>
+                        </tr>
                     </tbody>
                 </table>
             </form>
         </div>
-        {% endfor %}
+
+        <!-- Sidebar for raw email content, floating with the page -->
+        <div class="raw-email-sidebar">
+            <div class="raw-email-header">Raw Email</div>
+            <div class="raw-email-content">
+                <blockquote>{{ data['raw_email'] }}</blockquote>
+            </div>
+        </div>
     </div>
 
-    <footer class="page-footer blue">
-        <div class="container">
-            <p>&copy; 2024 JSON Application</p>
-        </div>
-    </footer>
+    <!-- Floating Save Button -->
+    <button class="btn-floating btn-large green floating-save-btn" onclick="saveOrder(event)">
+        <i class="material-icons">save</i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
     <script>
-        function toggleLock(id, orderIndex) {
-            var field = document.getElementById('field-' + id);
-            var lockIcon = document.getElementById('lock-' + id);
+        // Function to handle form submission and send updated data to backend
+        function saveOrder(event) {
+            event.preventDefault();  // Prevent form from submitting the traditional way
 
-            if (field && lockIcon) {
-                if (field.disabled) {
-                    field.disabled = false;  // Unlock the field
-                    lockIcon.textContent = 'lock_open';  // Change the icon to 'unlocked'
-                } else {
-                    field.disabled = true;  // Lock the field
-                    lockIcon.textContent = 'lock';  // Change the icon to 'locked'
-                }
-                // Check the state of all fields for this order
-                checkOrderLocked(orderIndex);
-            }
-        }
+            const form = document.getElementById('orderForm');
+            const formData = new FormData(form);
+            const formDataObj = {};
 
-        function checkOrderLocked(orderIndex) {
-            // Select all fields for the current order
-            var fields = document.querySelectorAll(`[id^='field-${orderIndex}_']`);
-            var allLocked = true;
-
-            // Loop through all fields to check if they are all locked
-            fields.forEach(function(field) {
-                if (!field.disabled) {
-                    allLocked = false;  // If any field is unlocked, do not enable the save button
-                }
+            // Convert FormData to a JSON object
+            formData.forEach((value, key) => {
+                formDataObj[key] = value;
             });
 
-            // Enable or disable the save button based on the state of the fields
-            var saveOrderBtn = document.getElementById('save-order-' + orderIndex);
-            if (allLocked) {
-                saveOrderBtn.disabled = false;  // All fields are locked, enable the button
-            } else {
-                saveOrderBtn.disabled = true;  // Some fields are unlocked, disable the button
-            }
+            const orderId = {{ data['ID'] }};  // Get the order ID
+
+            // Send the updated order data to the backend
+            fetch(`/orders/${orderId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formDataObj)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                M.toast({html: 'Order updated successfully!', classes: 'green', displayLength: 8000});
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                M.toast({html: 'Error updating order!', classes: 'red', displayLength: 8000});
+            });
         }
     </script>
 </body>
