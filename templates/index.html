@@ -21,12 +21,12 @@
     <!-- Navbar -->
     <nav class="blue">
         <div class="nav-wrapper">
-            <a href="#" class="brand-logo center">Orders List</a>
+            <a href="#" class="brand-logo center">LLM Mail Validation Tool</a>
         </div>
     </nav>
 
     <div class="container content">
-        <h3 class="center-align">List of Orders</h3>
+        <h3 class="center-align">Pending Orders</h3>
 
         <!-- Check if there are any orders -->
         {% if json_files %}
@@ -40,14 +40,15 @@
                             <div class="col s6" id="order-text-{{ order.ID }}">
                                 <span><strong>Customer:</strong> {{ order.customer_name }} | <strong>Order ID:</strong> {{ order.ID }}</span><br>
                                 <span><strong>Pickup Country:</strong> {{ order.pickup_country }} | <strong>Delivery Country:</strong> {{ order.delivery_country }}</span><br>
-                                <span><strong>Status:</strong> {{ order.status }} | <strong>Sent:</strong> {{ 'Yes' if order.sent else 'No' }}</span>
+                                <span><strong>Status:</strong> {{ order.status }} | <strong>Send:</strong> {{ order.sent }}</span><br>
+                                <!-- <span><strong>Status:</strong> {{ order.status }} | <strong>Sent:</strong> {{ 'Yes' if order.sent else 'No' }}</span>-->
                             </div>
 
                             <!-- Buttons (Send, View Details, Delete) on the right -->
                             <div class="col s6 right-align">
                                 <!-- Only show the Send button if the order has not been sent -->
                                 {% if not order.sent %}
-                                    <button class="btn green" id="send-btn-{{ order.ID }}" onclick="updateOrderStatus({{ order.ID }}, 'sent')">
+                                    <button class="btn green" id="send-btn-{{ order.ID }}" onclick="OrderSent('{{ order.ID }}')">
                                         <i class="material-icons left">send</i> Send
                                     </button>
                                 {% else %}
@@ -60,7 +61,7 @@
                                 </a>
 
                                 <!-- Delete Button -->
-                                <button class="btn red" onclick="updateOrderStatus({{ order.ID }}, 'deleted')">
+                                <button class="btn red" onclick="updateOrderStatus('{{ order.ID }}', 'deleted')">
                                     <i class="material-icons left">delete</i> Delete
                                 </button>
                             </div>
@@ -78,6 +79,22 @@
 
     <script>
         // Function to send or delete the order by updating the status using the PUT endpoint
+        function OrderSent(orderID){
+            // Encontrar el contenedor del texto que se desea actualizar
+            const orderText = document.getElementById(`order-text-${orderID}`);
+            // Aplicar la clase de color verde al contenedor entero
+            orderText.classList.add('green-text');
+            // Actualizar el contenido del texto Status y Send
+            orderText.innerHTML = orderText.innerHTML
+                .replace('Draft', 'Confirmed')   // Cambiar el status
+                .replace('False', 'True');             // Cambiar el valor de send
+            //orderText.innerHTML = 'NADA'
+            const sendBtn = document.getElementById(`send-btn-${orderID}`);
+            if (sendBtn) sendBtn.remove();
+            M.toast({html: 'Order sent successfully to the TMS!', classes: 'green', displayLength: 8000});
+
+        }
+
         function updateOrderStatus(orderId, action) {
             let statusUpdate;
             if (action === 'sent') {

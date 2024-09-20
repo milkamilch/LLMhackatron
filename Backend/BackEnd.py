@@ -1,20 +1,11 @@
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
-from flask import Flask, render_template, request, redirect, url_for
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
 import sqlite3
 from pydantic import BaseModel
 from typing import List,Optional
-import os
-
+from fastapi import HTTPException
 
 # Inicializar FastAPI
 app = FastAPI()
-
-
-template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../templates'))
-templates = Jinja2Templates(directory=template_dir)
-
 
 # Definir un modelo para los datos que se devolverán
 class Order(BaseModel):
@@ -63,13 +54,13 @@ class OrderList(BaseModel):
     sent: Optional[bool]
     creation_date: Optional[str]
 # Ruta del archivo SQLite (ajusta a tu fichero)
-DATABASE = "Backend/DbHack.db"
+DATABASE = "DbHack.db"
 
 # Conectar y recuperar todos los registros de la tabla "orders"
 def get_orders_from_db():
     conexion = sqlite3.connect(DATABASE)
     cursor = conexion.cursor()
-
+    
     # Ejecutar una consulta para obtener todos los registros de la tabla "orders"
     cursor.execute("""
         SELECT ID, client_Id, customer_name, reference, incoterms, 
@@ -82,7 +73,7 @@ def get_orders_from_db():
     """)
 
     registers = cursor.fetchall()
-
+    
     # Cerrar la conexión
     conexion.close()
 
@@ -123,7 +114,7 @@ def get_orders_from_db():
             "modified_date": file[31]
         }
     for file in registers]
-
+    
     return orders
 
 
@@ -131,15 +122,15 @@ def get_orders_from_db():
 def get_orders_list_from_db():
     conexion = sqlite3.connect(DATABASE)
     cursor = conexion.cursor()
-
+    
     # Ejecutar una consulta SQL para obtener solo los campos requeridos
     cursor.execute("""
         SELECT ID, customer_name, pickup_email,pickup_country,delivery_country, status, user, sent, creation_date
         FROM orders
     """)
-
+    
     registros = cursor.fetchall()
-
+    
     # Cerrar la conexión
     conexion.close()
 
@@ -157,7 +148,7 @@ def get_orders_list_from_db():
             "creation_date": fila[8]
         }
     for fila in registros]
-
+    
     return ordenes
 
 # Función para obtener una orden por ID
@@ -235,11 +226,11 @@ def update_order_in_db(order_id: int, order_data: dict):
         if value is not None:  # Solo actualizamos los campos que no son None
             fields.append(f'"{key}" = ?')
             values.append(value)
-
+    
     # Si no hay campos para actualizar, salir de la función
     if not fields:
         return None
-
+    
     # Agregar el ID al final de la lista de valores para la condición WHERE
     values.append(order_id)
 
@@ -268,19 +259,22 @@ def GetOrder():
     return orders
 
 # Endpoint para obtener solo los campos seleccionados (OrdersList)
-@app.get("/orderslist/", response_class=HTMLResponse)
-def OrdersList(request: Request):
-    orders_list = get_orders_list_from_db()
-    return templates.TemplateResponse("index.html", {"request": request, "json_files": orders_list})
+@app.get("/orderslist/", response_model=List[OrderList])
+def OrdersList():
+    ordersList = get_orders_list_from_db()
+    return ordersList
 
 
 # Endpoint para obtener una orden por ID
 @app.get("/order/{order_id}", response_model=Order)
-def get_order_by_id(order_id: int, request: Request):
+def get_order_by_id(order_id: int):
     order = get_order_by_id_from_db(order_id)
+    # Si no se encuentra la orden, devolver un error
     if order is None:
         raise HTTPException(status_code=404, detail="Order not found")
-    return templates.TemplateResponse("details.html", {"request": request, "filename": order, "data": order})
+    
+    return order
+
 
 
 # Endpoint para actualizar una orden por ID usando la clase Order
@@ -289,16 +283,9 @@ def update_order(order_id: int, order: Order):
     #print(order)
     # Convertir el modelo Pydantic a un diccionario para pasar a la base de datos
     updated_rows = update_order_in_db(order_id, order.dict(exclude_unset=True))
-
+    
     # Si no se actualizó ninguna fila, lanzar una excepción 404
     if updated_rows is None:
         raise HTTPException(status_code=404, detail="Order not found")
-
+    
     return {"message": "Order updated successfully"}
-
-
-
-# Starte die FastAPI-Anwendung mit Uvicorn, wenn das Skript direkt ausgeführt wird
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("BackEnd:app", host="127.0.0.1", port=8000, reload=True)

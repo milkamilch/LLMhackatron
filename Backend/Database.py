@@ -1,7 +1,7 @@
 import sqlite3
 
 # Ruta del archivo SQLite (ajusta a tu fichero)
-ruta_db = 'DbHack.db'
+ruta_db = 'BackEnd/DbHack.db'
 
 # Conectar a la base de datos
 conexion = sqlite3.connect(ruta_db)

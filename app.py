@@ -1,103 +1,57 @@
-from flask import Flask, render_template, request, redirect, url_for
-import os
-import json
+from flask import Flask, render_template, request, jsonify
+import requests
 
 app = Flask(__name__)
 
-# Directory for JSON files
-JSON_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../Downloads/Hackaton2/json_files")
-
-
-def set_value_in_json(data, path, value):
-    """
-    Navigate and update the JSON following the given path.
-    If the path contains list indices, they are properly converted to integers.
-    """
-    keys = path.replace('[', '.').replace(']', '').split('.')  # Split the path into keys and indices
-    current = data
-
-    # Navigate to the second-to-last level of the JSON
-    for i, key in enumerate(keys[:-1]):
-        if isinstance(current, list):
-            try:
-                # Convert the key to an index only if we are in a list
-                key = int(key)
-            except ValueError:
-                return f"Error: expected an integer index, but got '{key}'"
-        # Access the next level
-        try:
-            current = current[key]
-        except (KeyError, IndexError, TypeError) as e:
-            return f"Error navigating the JSON: {e}"
-
-    # Get the final key
-    final_key = keys[-1]
-    if isinstance(current, list):
-        try:
-            final_key = int(final_key)  # Convert the final index to integer if it's a list
-        except ValueError:
-            return f"Error: expected an integer index, but got '{final_key}'"
-
-    # Update the value at the correct level
-    try:
-        current[final_key] = value
-    except (KeyError, IndexError, TypeError) as e:
-        return f"Error attempting to assign the value in the JSON: {e}"
-
-    return None  # No errors
-
-
+# Ruta principal para mostrar la lista de órdenes
 @app.route('/')
 def index():
-    # Check if the directory exists
-    if not os.path.exists(JSON_DIR):
-        return "The directory does not exist", 404
+    try:
+        # Solicitud GET para obtener la lista de órdenes
+        response = requests.get('http://127.0.0.1:8000/orderslist/')
+        response.raise_for_status()  # Verifica si hay errores
+        orders = response.json()  # Parseamos el JSON
+    except requests.exceptions.RequestException as e:
+        print(f'Error al obtener la lista de órdenes: {e}')
+        orders = []  # Si hay un error, devolvemos una lista vacía
 
-    # List JSON files
-    json_files = [f for f in os.listdir(JSON_DIR) if f.endswith('.json')]
+    # Renderizamos la plantilla index.html con la lista de órdenes
+    return render_template('index.html', json_files=orders)
 
-    # If there are no JSON files
-    if not json_files:
-        return "No JSON files available", 404
+# Ruta para mostrar los detalles de una orden específica
+@app.route('/order/<int:order_id>')
+def order_details(order_id):
+    try:
+        # Solicitud GET para obtener los detalles de la orden
+        response = requests.get(f'http://127.0.0.1:8000/order/{order_id}')
+        response.raise_for_status()  # Verifica si hay errores
+        order_data = response.json()  # Parseamos el JSON con los detalles de la orden
+    except requests.exceptions.RequestException as e:
+        print(f'Error al obtener los detalles de la orden {order_id}: {e}')
+        order_data = {}  # Si hay un error, devolvemos un diccionario vacío
 
-    return render_template('index.html', json_files=json_files)
+    # Renderizamos la plantilla details.html con los detalles de la orden
+    return render_template('details.html', data=order_data)
 
+# Ruta PUT para guardar la orden
+@app.route('/save_order/<int:order_id>', methods=['PUT'])
+def save_order(order_id):
+    # Recibimos los datos del formulario en formato JSON
+    try:
+        order_data = request.json  # Obtenemos el JSON del cuerpo de la solicitud
+        print(f'Recibido el siguiente JSON para guardar: {order_data}')
+        
+        # Hacemos la solicitud PUT a la API para actualizar la orden
+        response = requests.put(f'http://127.0.0.1:8000/orders/{order_id}', json=order_data)
+        response.raise_for_status()  # Verifica si hay errores
+        updated_order = response.json()  # Parseamos el JSON de la respuesta
 
-@app.route('/view/<filename>', methods=['GET'])
-def view_json(filename):
-    # Load the JSON file
-    file_path = os.path.join(JSON_DIR, filename)
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-    return render_template('details.html', filename=filename, data=data)
+        return jsonify({'status': 'success', 'message': 'Order updated successfully', 'data': updated_order}), 200
 
+    except requests.exceptions.RequestException as e:
+        print(f'Error al actualizar la orden {order_id}: {e}')
+        return jsonify({'status': 'error', 'message': 'Failed to update order'}), 400
 
-@app.route('/save/<filename>', methods=['POST'])
-def save_json(filename):
-    # Load the current JSON file
-    file_path = os.path.join(JSON_DIR, filename)
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-
-    # Get the path and the new value
-    path = request.form['path']  # Example: "bultos[0].campo"
-    new_value = request.form['value']  # The new value
-
-    # Update the JSON
-    error = set_value_in_json(data, path, new_value)
-    if error:
-        return error, 400
-
-    # Overwrite the JSON file
-    with open(file_path, 'w') as f:
-        json.dump(data, f, indent=4)
-
-    # Redirect to the details page
-    anchor = path.replace('.', '_').replace('[', '_').replace(']', '_')
-    return redirect(url_for('view_json', filename=filename) + f"#field-{anchor}")
-
-
+# Esto se ejecuta si corres el archivo directamente
 if __name__ == '__main__':
-    if not os.path.exists(JSON_DIR):
-        os.makedirs(JSON_DIR)
     app.run(debug=True)
